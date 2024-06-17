@@ -11,20 +11,37 @@ const PostDetail = () => {
   const [comments, setComments] = useState([])
   const [token] = useState(localStorage.getItem('token'))
   const { register, handleSubmit, reset } = useForm()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    api
-      .get(`/posts/${id}`)
-      .then((response) => setPost(response.data))
-      .catch((error) => console.log(error))
+    const fetchPost = async () => {
+      try {
+        const response = await api.get(`/posts/${id}`)
+        setPost(response.data)
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false) // Set loading to false in case of error
+      }
+    }
+
+    fetchPost()
   }, [id])
 
   useEffect(() => {
-    api
-      .get(`/comments/${id}`)
-      .then((response) => setComments(response.data))
-      .catch((error) => console.log(error))
+    const fetchComments = async () => {
+      try {
+        const response = await api.get(`/comments/${id}`)
+        setComments(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchComments()
   }, [id])
+
+  if (loading) return <div>Loading...</div>
 
   const handleCommentSubmit = async (data) => {
     try {

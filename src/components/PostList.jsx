@@ -9,12 +9,20 @@ const PostList = () => {
   const navigate = useNavigate()
   const [token] = useState(localStorage.getItem('token'))
   const [hoveredPostId, setHoveredPostId] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     api
       .get('/posts')
-      .then((response) => setPosts(response.data))
-      .catch((error) => console.log(error))
+      .then((response) => {
+        setPosts(response.data)
+        setLoading(false)
+      })
+
+      .catch((error) => {
+        console.log(error)
+        setLoading(false)
+      })
   }, [])
 
   const handleDelete = async (id) => {
@@ -50,48 +58,52 @@ const PostList = () => {
           New Post
         </button>
       </div>
-      {filteredPosts.map((post) => (
-        <div
-          key={post.id}
-          className={`post-card mb-4 p-4 border rounded shadow cursor-pointer transition-transform transform ${
-            hoveredPostId === post.id
-              ? 'scale-105 shadow-lg relative'
-              : 'scale-100 shadow-sm'
-          }`}
-          onMouseEnter={() => setHoveredPostId(post.id)}
-          onMouseLeave={() => setHoveredPostId(null)}
-        >
-          {hoveredPostId === post.id && (
-            <div className='absolute inset-0 bg-black bg-opacity-50 z-10 rounded'></div>
-          )}
+      {loading ? (
+        <div className='text-center'>Loading...</div>
+      ) : (
+        filteredPosts.map((post) => (
           <div
-            className={`relative z-20 ${
-              hoveredPostId === post.id ? 'text-white' : 'text-black'
+            key={post.id}
+            className={`post-card mb-4 p-4 border rounded shadow cursor-pointer transition-transform transform ${
+              hoveredPostId === post.id
+                ? 'scale-105 shadow-lg relative'
+                : 'scale-100 shadow-sm'
             }`}
+            onMouseEnter={() => setHoveredPostId(post.id)}
+            onMouseLeave={() => setHoveredPostId(null)}
           >
-            <h2 className='text-2xl font-semibold'>
-              <Link to={`/posts/${post.id}`}>{post.title}</Link>
-            </h2>
-            <p>{post.content}</p>
-            {token && hoveredPostId === post.id && (
-              <div className='mt-2'>
-                <button
-                  onClick={() => navigate(`/edit/${post.id}`)}
-                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2'
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(post.id)}
-                  className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
-                >
-                  Delete
-                </button>
-              </div>
+            {hoveredPostId === post.id && (
+              <div className='absolute inset-0 bg-black bg-opacity-50 z-10 rounded'></div>
             )}
+            <div
+              className={`relative z-20 ${
+                hoveredPostId === post.id ? 'text-white' : 'text-black'
+              }`}
+            >
+              <h2 className='text-2xl font-semibold'>
+                <Link to={`/posts/${post.id}`}>{post.title}</Link>
+              </h2>
+              <p>{post.content}</p>
+              {token && hoveredPostId === post.id && (
+                <div className='mt-2'>
+                  <button
+                    onClick={() => navigate(`/edit/${post.id}`)}
+                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2'
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(post.id)}
+                    className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded'
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   )
 }

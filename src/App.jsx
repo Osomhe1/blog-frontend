@@ -4,6 +4,7 @@ import {
   Route,
   Routes,
   Navigate,
+  Link,
 } from 'react-router-dom'
 import Auth from './components/Auth'
 import CreatePost from './components/CreatePost'
@@ -12,9 +13,11 @@ import PostList from './components/PostList'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import EditPost from './components/EditPost'
+// import { useNavigate } from 'react-router-dom'
 
 const App = () => {
   const [token, setToken] = useState(localStorage.getItem('token'))
+  // const navigate = useNavigate()
 
   const handleSetToken = (newToken) => {
     setToken(newToken)
@@ -25,20 +28,48 @@ const App = () => {
     setToken(null)
     localStorage.removeItem('token')
   }
-  console.log(token, 'tokem')
 
   return (
     <Router>
       <ToastContainer />
       <div className='container mx-auto p4'>
-        <div className='flex justify-end shadow-md px-4 py-3 mb-2  sticky bg-white w-full items-end'>
+        <div
+          className={
+            token
+              ? 'bg-white flex justify-between shadow-md px-4 py-3 mb-2  sticky w-full items-end'
+              : ` `
+          }
+        >
           {token ? (
-            <button
-              onClick={handleLogout}
-              className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-4'
-            >
-              Logout
-            </button>
+            <>
+              <Link to={`/`}>
+                <button
+                  type='button'
+                  className='bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+                >
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    strokeWidth='1.5'
+                    stroke='currentColor'
+                    className='size-6'
+                  >
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      d='M15.75 19.5 8.25 12l7.5-7.5'
+                    />
+                  </svg>
+                </button>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className='bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+              >
+                Logout
+              </button>
+            </>
           ) : (
             <Navigate to='/auth' />
           )}
